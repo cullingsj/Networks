@@ -15,7 +15,7 @@ def player(host, port, x, y): # i.e. the client
     socket = sc.socket()
     socket.connect((host, port))
     
-    socket.send(('x='+x+'&y='+y).encode())
+    socket.send(('x='+str(x)+'&y='+str(y)).encode())
 
     reply = socket.recv(1024).decode()
 
