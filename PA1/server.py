@@ -46,20 +46,20 @@ def battlefield(port, filename): # i.e. the host server
                 y = int(cords[5])
             except:
                 #return bad request
-                player.send(("HTTP Bad Request").encode())
+                player.send(("400").encode())
                 break
            
             #bounds?    
             if(0<=x<=9)and(0<=y<=9):
             else:
                 #return out of bounds
-                player.send(("HTTP Not Found").encode())
+                player.send(("404").encode())
                 break
 
             #already hit?    
             if(board[x][y]='X') or (board[x][y]='O'):
                 #return out of bounds
-                player.send(("HTTP Gone").encode())
+                player.send(("410").encode())
                 break
             else:   
                 if(board[x][y]!='_'): #hit
@@ -69,7 +69,7 @@ def battlefield(port, filename): # i.e. the host server
                 else: #miss
                     board[x][y] = 'O'
                     #return miss
-                    player.send(("HTTP OK hit=0").encode())
+                    player.send(("200 hit=0").encode())
                     break
                 
             #close inner loop
