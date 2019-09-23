@@ -26,48 +26,54 @@ def battlefield(port, filename): # i.e. the host server
 
     socket = sc.socket()
     socket.bind((host,port)) # connect host ip and desired port number
-    
-    while True:     
+
+    while True:    
         socket.listen(1) # waits for connection
         player, address = socket.accept()
-
-        print("New Connection found, initializing game.")
-
-        board = loadBoard('own_board.txt')
-
-        cords = player.revc(1024).decode()
-        print(cords)
-
-        #parce cords,BAD REQUEST?
-        try:
-            x = int(cords[2])
-            y = int(cords[5])
-        except:
-            #return bad request
-            player.send(("HTTP Bad Request").encode())
-            break
+        
+        while True: 
+    
+            print("New Connection found, initializing game.")
+    
+            board = loadBoard('own_board.txt')
+    
+            cords = player.revc(1024).decode()
+            print(cords)
+    
+            #parce cords,BAD REQUEST?
+            try:
+                x = int(cords[2])
+                y = int(cords[5])
+            except:
+                #return bad request
+                player.send(("HTTP Bad Request").encode())
+                break
            
-        #bounds?    
-        if(0<=x<=9)and(0<=y<=9):
-        else:
-            #return out of bounds
-            player.send(("HTTP Not Found").encode())
+            #bounds?    
+            if(0<=x<=9)and(0<=y<=9):
+            else:
+                #return out of bounds
+                player.send(("HTTP Not Found").encode())
+                break
+
+            #already hit?    
+            if(board[x][y]='X') or (board[x][y]='O'):
+                #return out of bounds
+                player.send(("HTTP Gone").encode())
+                break
+            else:   
+                if(board[x][y]!='_'): #hit
+                    
+                #sunk
+                    
+                else: #miss
+                    board[x][y] = 'O'
+                    #return miss
+                    player.send(("HTTP OK hit=0").encode())
+                    break
+                
+            #close inner loop
             break
-
-        #already hit?    
-        if(board[x][y]='X') or (board[x][y]='O'):
-            #return out of bounds
-            player.send(("HTTP Gone").encode())
-            break
-        
-
-        #hit
-
-            #hit
-            #miss
-            #sunk
-        
-
 
 '''        player.send(('Would you like to play a game?').encode())
         instructions = player.recv(1024).decode()
@@ -82,7 +88,7 @@ def battlefield(port, filename): # i.e. the host server
         else:
             reply = 'you send me something?'
         player.send(reply.encode())'''
-        
+        #close connection
         player.close()
 
 #main
