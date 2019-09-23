@@ -26,16 +26,17 @@ def battlefield(port, filename): # i.e. the host server
 
     socket = sc.socket()
     socket.bind((host,port)) # connect host ip and desired port number
+    
+    while True:     
+        socket.listen(1) # waits for connection
+        player, address = socket.accept()
 
-    socket.listen(1) # waits for connection
-    player, address = socket.accept()
+        print("New Connection found, initializing game.")
 
-    print("New Connection found, initializing game.")
+        board = loadBoard('own_board.txt')
 
-    board = loadBoard('own_board.txt')
 
-    while True:
-        player.send(('Would you like to play a game?').encode())
+'''        player.send(('Would you like to play a game?').encode())
         instructions = player.recv(1024).decode()
         
         if not instructions:
@@ -47,10 +48,11 @@ def battlefield(port, filename): # i.e. the host server
             
         else:
             reply = 'you send me something?'
-        player.send(reply.encode())
+        player.send(reply.encode())'''
         
-    player.close()
+        player.close()
 
+#main
 if __name__ == '__main__':
     try:
 
