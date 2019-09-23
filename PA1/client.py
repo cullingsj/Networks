@@ -6,33 +6,37 @@
 #########/###################
 
 import socket as sc
+import sys
+#import csv
+import fileinput
 
-def player(): # i.e. the client
-    host = sc.gethostname()
-    port = 8990
 
+def player(host, port, x, y): # i.e. the client
     socket = sc.socket()
     socket.connect((host, port))
-
-    data = socket.recv(1024).decode()
-
-    print(data)
-    reply = input('-> ')
-
-    socket.send(reply.encode())
-
-    if(reply == 'y' or 'Y' or 'Yes' or 'yes'):
-        while True:
-            data = socket.recv(1024).decode()
-            print(data)
-            
-            message = input('Please enter an instruction with Column(A-J),Row(1-10), Ex: A8\n-> ')
-            socket.send(message.encode())
+    while True:
+        print(data)
+        
+        socket.send(message.encode())
         
     socket.close()
 
 if __name__ == '__main__':
-    player()
+    try:
+        host = int(sys.argv[1])
+        port = sys.argv[2]
+        x = int(sys.argv[3])
+        y = int(sys.argv[4])
+
+        print(str(host))
+        print(str(port))
+        print(str(x))
+        print(str(y))
+        
+        player(host, port, x, y)
+        
+    except:
+        print('Invalid input')
 
 #########################################################################################################
 # References:                                                           `                               #
