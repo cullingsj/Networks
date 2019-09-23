@@ -23,15 +23,10 @@ def player(host, port, x, y): # i.e. the client
 
 if __name__ == '__main__':
     try:
-        host = int(sys.argv[1])
-        port = sys.argv[2]
+        host = str(sys.argv[1])
+        port = int(sys.argv[2])
         x = int(sys.argv[3])
         y = int(sys.argv[4])
-
-        print(str(host))
-        print(str(port))
-        print(str(x))
-        print(str(y))
         
         player(host, port, x, y)
         
