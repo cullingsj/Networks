@@ -14,11 +14,13 @@ import fileinput
 def player(host, port, x, y): # i.e. the client
     socket = sc.socket()
     socket.connect((host, port))
-    while True:
-        print(data)
-        
-        socket.send(message.encode())
-        
+    
+    socket.send(('x='+x+'&y='+y).encode())
+
+    reply = socket.recv(1024).decode()
+
+    print(reply)
+    
     socket.close()
 
 if __name__ == '__main__':
