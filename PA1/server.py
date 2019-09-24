@@ -10,12 +10,6 @@ import sys
 import csv
 import fileinput
 
-def writeOut(outFile, board):
-    for i in range(0,10):
-        for j in range(0,10):
-            outFile.write(board[i][j])
-        outFile.write("\n")
-
 def battle(port, board): # i.e. the host server
     host = sc.gethostbyname(sc.gethostname()) # retreives the name of the local machine
     ships_sunk = 0
@@ -59,6 +53,7 @@ def battle(port, board): # i.e. the host server
                 own_out = open("own_board.txt", 'w')
                 
                 for i in range(0,10):
+                    print(''.join(board[i]))
                     own_out.write(''.join(board[i]))
                     own_out.write("\n")
                     for j in range(0,10):
@@ -102,6 +97,7 @@ def prepBoard(boardFile):
 
         file.append(newFile)
         newFile = []
+        display(file)
         
     return file
 
@@ -116,8 +112,6 @@ if __name__ == '__main__':
         own_board = f.read().splitlines()
         f.close()
     own_board = prepBoard(own_board)
-
-    display(own_board)
     
     port = int(sys.argv[1])
     
