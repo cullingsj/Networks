@@ -29,35 +29,41 @@ def player(host, port, x, y): # i.e. the client
 
         file.append(newFile)
         newFile = []
+
+    if(result != '400'):
+        x = int(x)
+        y = int(y)
+        opponent_board = file
         
-    opponent_board = file
-    
-    opponent_out = open("opponent_board.txt", 'w')
+        opponent_out = open("opponent_board.txt", 'w')
 
-    if(len(result) > 5):
-        if(result[8] == '1'):
-            opponent_board[x][y] = 'X'
+        if(len(result) > 5):
+            if(result[8] == '1'):
+                opponent_board[x][y] = 'X'
 
-        elif(result[8] == '0'):
-            opponent_board[x][y] = 'O'
+            elif(result[8] == '0'):
+                opponent_board[x][y] = 'O'
 
-    for i in range(0,10):
-        opponent_out.write(''.join(opponent_board[i]))
-        opponent_out.write("\n")
+        for i in range(0,10):
+            opponent_out.write(''.join(opponent_board[i]))
+            opponent_out.write("\n")
 
-    socket.close()
-    
+        socket.close()
+        
     print('\n  0 1 2 3 4 5 6 7 8 9')
     for i in range(0,10):
         print(str(i)+' '+str(' '.join(opponent_board[i])))
 
 if __name__ == '__main__':
-    host = str(sys.argv[1])
-    port = int(sys.argv[2])
-    x = int(sys.argv[3])
-    y = int(sys.argv[4])
-    
-    player(host, port, x, y)
+    try:
+        host = str(sys.argv[1])
+        port = int(sys.argv[2])
+        x = sys.argv[3]
+        y = sys.argv[4]
+        
+        player(host, port, x, y)
+    except:
+        print("Please enter the correct parameters")
 
 #########################################################################################################
 # References:                                                           `                               #

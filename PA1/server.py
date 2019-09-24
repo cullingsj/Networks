@@ -29,6 +29,7 @@ def battle(port, board): # i.e. the host server
             try:
                 x = int(cords[6])
                 y = int(cords[10])
+                
             except:
                 #return bad request
                 player.send(('400').encode())
@@ -42,7 +43,6 @@ def battle(port, board): # i.e. the host server
 
             #already hit?    
             if(board[x][y]=='X') or (board[x][y]=='O'):
-                #return out of bounds
                 player.send(('410').encode())
             
             elif(board[x][y]!='_'):
@@ -71,6 +71,7 @@ def battle(port, board): # i.e. the host server
                 own_out = open("own_board.txt", 'w')
                 
                 for i in range(0,10):
+                    print(''.join(board[i]))
                     own_out.write(''.join(board[i]))
                     own_out.write("\n")
                     
@@ -86,6 +87,7 @@ def battle(port, board): # i.e. the host server
         player.close()
         
         if(ships_sunk == 5):
+            print("\n\n\n\n\n\n\n\n\nYou win!")
             break
 
 def prepBoard(boardFile):
@@ -97,7 +99,8 @@ def prepBoard(boardFile):
 
         file.append(newFile)
         newFile = []
-        display(file)
+        
+    display(file)
         
     return file
 
@@ -112,7 +115,7 @@ if __name__ == '__main__':
         own_board = f.read().splitlines()
         f.close()
     own_board = prepBoard(own_board)
-    
+        
     port = int(sys.argv[1])
     
     battle(port,own_board)
