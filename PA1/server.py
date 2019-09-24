@@ -17,7 +17,7 @@ def writeOut(outFile, board):
         outFile.write("\n")
 
 def battle(port, board): # i.e. the host server
-    host = sc.gethostname() # retreives the name of the local machine
+    host = sc.gethostbyname(sc.gethostname()) # retreives the name of the local machine
     ships_sunk = 0
     socket = sc.socket()
     socket.bind((host,port)) # connect host ip and desired port number
