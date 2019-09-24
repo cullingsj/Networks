@@ -31,9 +31,10 @@ def player(host, port, x, y): # i.e. the client
         newFile = []
         
     opponent_board = file
+    
+    opponent_out = open("opponent_board.txt", 'w')
 
     if(len(result) > 5):
-        opponent_out = open("opponent_board.txt", 'w')
         if(result[8] == '1'):
             opponent_board[x][y] = 'X'
 
@@ -43,7 +44,7 @@ def player(host, port, x, y): # i.e. the client
     for i in range(0,10):
         opponent_out.write(''.join(opponent_board[i]))
         opponent_out.write("\n")
-    
+
     socket.close()
     
     print('\n  0 1 2 3 4 5 6 7 8 9')

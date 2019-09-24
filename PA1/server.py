@@ -56,8 +56,11 @@ def battle(port, board): # i.e. the host server
                 curr = board[x][y]
                 board[x][y] = 'X'
                 part_count = 0
+                own_out = open("own_board.txt", 'w')
                 
                 for i in range(0,10):
+                    own_out.write(''.join(board[i]))
+                    own_out.write("\n")
                     for j in range(0,10):
                         if (board[i][j]==curr):
                             part_count += 1
@@ -70,14 +73,16 @@ def battle(port, board): # i.e. the host server
                 
             else: #miss
                 board[x][y] = 'O'
+                own_out = open("own_board.txt", 'w')
                 
+                for i in range(0,10):
+                    own_out.write(''.join(board[i]))
+                    own_out.write("\n")
+                    
                 #return miss
                 player.send(('200 hit=0').encode())
-                
-            own_out = open("own_board.txt", 'w')
-            for i in range(0,10):
-                own_out.write(''.join(board[i]))
-                own_out.write("\n")
+
+            
 
             #close inner loop
             break
