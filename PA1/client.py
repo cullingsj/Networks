@@ -7,7 +7,7 @@
 
 import socket as sc
 import sys
-
+import time
 
 def player(host, port, x, y): # i.e. the client
     socket = sc.socket()
@@ -19,14 +19,14 @@ def player(host, port, x, y): # i.e. the client
     print(result)
     
     socket.close()
-    
+    time.sleep(5)
     with open("opponent_board.txt") as f:
         opponent_board = f.read().splitlines()
 
     file = []
     newFile = []
-    for i in range(0,9):
-        for j in range (0,9):
+    for i in range(0,10):
+        for j in range (0,10):
             newFile.append(opponent_board[i][j])
 
         file.append(newFile)

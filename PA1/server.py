@@ -11,6 +11,7 @@ import csv
 import fileinput
 
 def writeOut(outFile, board):
+    display(board)
     for i in range(0,10):
         for j in range(0,10):
             outFile.write(board[i][j])
@@ -21,6 +22,9 @@ def battle(port, board, record): # i.e. the host server
     ships_sunk = 0
     socket = sc.socket()
     socket.bind((host,port)) # connect host ip and desired port number
+
+    own_out = open("own_board.txt", 'a')
+    opponent_out = open("opponent_board.txt", 'a')
     
     while True:
         socket.listen(1) # waits for connection
@@ -28,9 +32,6 @@ def battle(port, board, record): # i.e. the host server
         
         cords = player.recv(1024).decode()
         print('\nReceived: '+str(cords)+'\n')
-
-        own_out = open("own_board.txt", "w")
-        opponent_out = open("opponent_board.txt", "w")
         
         while True:
     
@@ -53,7 +54,6 @@ def battle(port, board, record): # i.e. the host server
             if(board[x][y]=='X') or (board[x][y]=='O'):
                 #return out of bounds
                 player.send(('410').encode())
-                break
             
             elif(board[x][y]!='_'):
                 #hit
@@ -75,20 +75,17 @@ def battle(port, board, record): # i.e. the host server
                 record[x][y] = 'O'
                 
                 #return miss
-                writeOut(opponent_out, record)
                 player.send(('200 hit=0').encode())
-                break
                 
             #close inner loop
+            writeOut(opponent_out, record)
+            writeOut(own_out, board)
             break
 
         #close connection
         player.close()
-
+        
         if(ships_sunk == 5):
-            for i in range(0,10):
-                for j in range(0,10):
-                    own_out.write(board[i][j])
             break
 
 def prepBoard(boardFile):
@@ -112,11 +109,9 @@ def display(board):
 if __name__ == '__main__':    
     with open(sys.argv[2]) as f:
         own_board = f.read().splitlines()
+        
     own_board = prepBoard(own_board)
     opponent_board = [['_']*10 for i in range(10)]
-
-    display(own_board)
-    display(opponent_board)
     
     port = int(sys.argv[1])
     
