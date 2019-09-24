@@ -7,33 +7,26 @@
 
 import socket as sc
 import sys
-#import csv
-import fileinput
 
 
 def player(host, port, x, y): # i.e. the client
     socket = sc.socket()
     socket.connect((host, port))
-    
-    socket.send(('x='+str(x)+'&y='+str(y)).encode())
 
-    reply = socket.recv(1024).decode()
+    socket.send(('200 x='+str(x)+'&y='+str(y)).encode())
 
-    print(reply)
+    result = socket.recv(1024).decode()
+    print(result)
     
     socket.close()
 
 if __name__ == '__main__':
-    try:
-        host = str(sys.argv[1])
-        port = int(sys.argv[2])
-        x = int(sys.argv[3])
-        y = int(sys.argv[4])
-        
-        player(host, port, x, y)
-        
-    except:
-        print('Invalid input')
+    host = str(sys.argv[1])
+    port = int(sys.argv[2])
+    x = int(sys.argv[3])
+    y = int(sys.argv[4])
+    
+    player(host, port, x, y)
 
 #########################################################################################################
 # References:                                                           `                               #
