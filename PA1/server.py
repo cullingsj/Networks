@@ -10,13 +10,10 @@ import sys
 import csv
 import fileinput
 
-def checkMove(column, row):
-    # Needs to be filled out
-    return False
 
 def battle(port, board, record): # i.e. the host server
     host = sc.gethostname() # retreives the name of the local machine
-    
+    ships_sunk = 0
     socket = sc.socket()
     socket.bind((host,port)) # connect host ip and desired port number
     
@@ -26,6 +23,9 @@ def battle(port, board, record): # i.e. the host server
         
         cords = player.recv(1024).decode()
         print('\nReceived: '+str(cords)+'\n')
+
+        own_out = open("own_board.txt", "w")
+        opponent_out = open("opponent_board.txt", "w")
         
         while True:
     
@@ -57,11 +57,12 @@ def battle(port, board, record): # i.e. the host server
                 record[x][y] = 'X'
                 
                 if curr in board:
-                    player.send(('200 hit=0').encode())
+                    player.send(('200 hit=1').encode())
                     
                 else:
                     #sunk
-                    player.send(('200 hit=0\&sink='+curr).encode())
+                    player.send(('200 hit=1\&sink='+curr).encode())
+                    ships_sunk += 1
                 
             else: #miss
                 board[x][y] = 'O'
@@ -76,7 +77,13 @@ def battle(port, board, record): # i.e. the host server
 
         #close connection
         player.close()
-        break
+
+        if(ships_sunk == 5):
+            for i in range(0,10):
+                for j in range(0,10):
+                    own_out.write(board[i][j])
+                    opponent_out.write(record[i][j])
+            break
 
 def prepBoard(boardFile):
     file = []
@@ -98,36 +105,14 @@ def display(board):
 #main
 if __name__ == '__main__':    
     with open(sys.argv[2]) as f:
-        own_file = f.read().splitlines()
-    own_file = prepBoard(own_file)
-    own_record = [['_']*10 for i in range(10)]
-    
-    with open('opponent_board.txt') as f:
-        opp_file = f.read().splitlines()
-    opp_file = prepBoard(opp_file)
-    opp_record = [['_']*10 for i in range(10)]
-
-    
+        own_board = f.read().splitlines()
+    own_board = prepBoard(own_board)
+    opponent_board = [['_']*10 for i in range(10)]
 
     port = int(sys.argv[1])
     
     while(True):
-        print('P1 board:')
-        display(own_file)
-        print('P1 record:')
-        display(own_record)
-        battle(port,opp_file,own_record)
-
-        print('P2 board:')
-        display(opp_file)
-        print('P2 record:')
-        display(own_record)
-        battle(port,own_file,opp_record)
-        
-        cont = input('Another Round? y/n\n-> ')
-        
-        if cont == 'n':
-            break
+        battle(port,own_board,opponent_board)
     
 #########################################################################################################
 # References:                                                           `                               #
