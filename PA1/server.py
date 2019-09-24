@@ -11,7 +11,6 @@ import csv
 import fileinput
 
 def writeOut(outFile, board):
-    display(board)
     for i in range(0,10):
         for j in range(0,10):
             outFile.write(board[i][j])
@@ -22,9 +21,6 @@ def battle(port, board, record): # i.e. the host server
     ships_sunk = 0
     socket = sc.socket()
     socket.bind((host,port)) # connect host ip and desired port number
-
-    own_out = open("own_board.txt", 'a')
-    opponent_out = open("opponent_board.txt", 'a')
     
     while True:
         socket.listen(1) # waits for connection
@@ -32,6 +28,9 @@ def battle(port, board, record): # i.e. the host server
         
         cords = player.recv(1024).decode()
         print('\nReceived: '+str(cords)+'\n')
+        
+        own_out = open("own_board.txt", 'a')
+        opponent_out = open("opponent_board.txt", 'a')
         
         while True:
     
@@ -41,12 +40,16 @@ def battle(port, board, record): # i.e. the host server
                 y = int(cords[10])
             except:
                 #return bad request
+                writeOut(opponent_out, record)
+                writeOut(own_out, board)
                 player.send(('400').encode())
                 break
            
             #bounds?    
             if(0>x or x>9)and(0>y or y>9) and cords[7]!=0 and len(cords)<=11:
                 #return out of bounds
+                writeOut(opponent_out, record)
+                writeOut(own_out, board)
                 player.send(('404').encode())
                 break
 
@@ -60,11 +63,17 @@ def battle(port, board, record): # i.e. the host server
                 curr = board[x][y]
                 board[x][y] = 'X'
                 record[x][y] = 'X'
-                writeOut(opponent_out, record)
+                part_count = 0
                 
-                if curr in board:
+                #writeOut(own_out, board)
+                #writeOut(opponent_out, record)
+                
+                for i in range(0,10):
+                    for j in range(0,10):
+                        if (board[i][j]==curr):
+                            part_count += 1
+                if(part_count > 0):
                     player.send(('200 hit=1').encode())
-                    
                 else:
                     #sunk
                     player.send(('200 hit=1\&sink='+curr).encode())
@@ -74,14 +83,21 @@ def battle(port, board, record): # i.e. the host server
                 board[x][y] = 'O'
                 record[x][y] = 'O'
                 
+                #writeOut(own_out, board)
+                #writeOut(opponent_out, record)
+                
                 #return miss
                 player.send(('200 hit=0').encode())
                 
-            #close inner loop
-            writeOut(opponent_out, record)
-            writeOut(own_out, board)
-            break
+            for i in range(0,10):
+                own_out.write(''.join(board[i][j]))
+                opponent_out.write(''.join(board[i][j]))
+                own_out.write("\n")
+                opponent_out.write("\n")
 
+            #close inner loop
+            break
+            
         #close connection
         player.close()
         
