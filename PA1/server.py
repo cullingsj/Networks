@@ -112,12 +112,12 @@ def display(board):
 
 #main
 if __name__ == '__main__':    
-    with open(sys.argv[2]) as f:
+    with open(sys.argv[2],"r") as f:
         own_board = f.read().splitlines()
-        
+        f.close()
     own_board = prepBoard(own_board)
 
-    display
+    display(own_board)
     
     port = int(sys.argv[1])
     
