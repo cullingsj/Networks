@@ -16,7 +16,7 @@ def writeOut(outFile, board):
             outFile.write(board[i][j])
         outFile.write("\n")
 
-def battle(port, board, record): # i.e. the host server
+def battle(port, board): # i.e. the host server
     host = sc.gethostname() # retreives the name of the local machine
     ships_sunk = 0
     socket = sc.socket()
@@ -29,9 +29,6 @@ def battle(port, board, record): # i.e. the host server
         cords = player.recv(1024).decode()
         print('\nReceived: '+str(cords)+'\n')
         
-        own_out = open("own_board.txt", 'a')
-        opponent_out = open("opponent_board.txt", 'a')
-        
         while True:
     
             #parce cords,BAD REQUEST?
@@ -40,16 +37,12 @@ def battle(port, board, record): # i.e. the host server
                 y = int(cords[10])
             except:
                 #return bad request
-                writeOut(opponent_out, record)
-                writeOut(own_out, board)
                 player.send(('400').encode())
                 break
            
             #bounds?    
             if(0>x or x>9)and(0>y or y>9) and cords[7]!=0 and len(cords)<=11:
                 #return out of bounds
-                writeOut(opponent_out, record)
-                writeOut(own_out, board)
                 player.send(('404').encode())
                 break
 
@@ -62,11 +55,7 @@ def battle(port, board, record): # i.e. the host server
                 #hit
                 curr = board[x][y]
                 board[x][y] = 'X'
-                record[x][y] = 'X'
                 part_count = 0
-                
-                #writeOut(own_out, board)
-                #writeOut(opponent_out, record)
                 
                 for i in range(0,10):
                     for j in range(0,10):
@@ -81,19 +70,14 @@ def battle(port, board, record): # i.e. the host server
                 
             else: #miss
                 board[x][y] = 'O'
-                record[x][y] = 'O'
-                
-                #writeOut(own_out, board)
-                #writeOut(opponent_out, record)
                 
                 #return miss
                 player.send(('200 hit=0').encode())
                 
+            own_out = open("own_board.txt", 'w')
             for i in range(0,10):
-                own_out.write(''.join(board[i][j]))
-                opponent_out.write(''.join(board[i][j]))
+                own_out.write(''.join(board[i]))
                 own_out.write("\n")
-                opponent_out.write("\n")
 
             #close inner loop
             break
@@ -127,11 +111,12 @@ if __name__ == '__main__':
         own_board = f.read().splitlines()
         
     own_board = prepBoard(own_board)
-    opponent_board = [['_']*10 for i in range(10)]
+
+    display
     
     port = int(sys.argv[1])
     
-    battle(port,own_board,opponent_board)
+    battle(port,own_board)
     
 #########################################################################################################
 # References:                                                           `                               #

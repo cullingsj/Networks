@@ -18,11 +18,9 @@ def player(host, port, x, y): # i.e. the client
     result = socket.recv(1024).decode()
     print(result)
     
-    socket.close()
-    time.sleep(5)
     with open("opponent_board.txt") as f:
         opponent_board = f.read().splitlines()
-
+        
     file = []
     newFile = []
     for i in range(0,10):
@@ -33,9 +31,23 @@ def player(host, port, x, y): # i.e. the client
         newFile = []
         
     opponent_board = file
+
+    if(len(result) > 5):
+        opponent_out = open("opponent_board.txt", 'w')
+        if(result[8] == '1'):
+            opponent_board[x][y] = 'X'
+
+        elif(result[8] == '0'):
+            opponent_board[x][y] = 'O'
+
+    for i in range(0,10):
+        opponent_out.write(''.join(opponent_board[i]))
+        opponent_out.write("\n")
+    
+    socket.close()
     
     print('\n  0 1 2 3 4 5 6 7 8 9')
-    for i in range(0,9):
+    for i in range(0,10):
         print(str(i)+' '+str(' '.join(opponent_board[i])))
 
 if __name__ == '__main__':
