@@ -19,6 +19,24 @@ def player(host, port, x, y): # i.e. the client
     print(result)
     
     socket.close()
+    
+    with open("opponent_board.txt") as f:
+        opponent_board = f.read().splitlines()
+
+    file = []
+    newFile = []
+    for i in range(0,9):
+        for j in range (0,9):
+            newFile.append(opponent_board[i][j])
+
+        file.append(newFile)
+        newFile = []
+        
+    opponent_board = file
+    
+    print('\n  0 1 2 3 4 5 6 7 8 9')
+    for i in range(0,9):
+        print(str(i)+' '+str(' '.join(opponent_board[i])))
 
 if __name__ == '__main__':
     host = str(sys.argv[1])

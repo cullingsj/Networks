@@ -10,6 +10,11 @@ import sys
 import csv
 import fileinput
 
+def writeOut(outFile, board):
+    for i in range(0,10):
+        for j in range(0,10):
+            outFile.write(board[i][j])
+        outFile.write("\n")
 
 def battle(port, board, record): # i.e. the host server
     host = sc.gethostname() # retreives the name of the local machine
@@ -55,6 +60,7 @@ def battle(port, board, record): # i.e. the host server
                 curr = board[x][y]
                 board[x][y] = 'X'
                 record[x][y] = 'X'
+                writeOut(opponent_out, record)
                 
                 if curr in board:
                     player.send(('200 hit=1').encode())
@@ -69,6 +75,7 @@ def battle(port, board, record): # i.e. the host server
                 record[x][y] = 'O'
                 
                 #return miss
+                writeOut(opponent_out, record)
                 player.send(('200 hit=0').encode())
                 break
                 
@@ -82,14 +89,13 @@ def battle(port, board, record): # i.e. the host server
             for i in range(0,10):
                 for j in range(0,10):
                     own_out.write(board[i][j])
-                    opponent_out.write(record[i][j])
             break
 
 def prepBoard(boardFile):
     file = []
     newFile = []
     for i in range(0,10):
-        for j in range (0, 10):
+        for j in range (0,10):
             newFile.append(boardFile[i][j])
 
         file.append(newFile)
@@ -109,10 +115,12 @@ if __name__ == '__main__':
     own_board = prepBoard(own_board)
     opponent_board = [['_']*10 for i in range(10)]
 
+    display(own_board)
+    display(opponent_board)
+    
     port = int(sys.argv[1])
     
-    while(True):
-        battle(port,own_board,opponent_board)
+    battle(port,own_board,opponent_board)
     
 #########################################################################################################
 # References:                                                           `                               #
