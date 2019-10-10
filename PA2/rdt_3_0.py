@@ -92,11 +92,11 @@ class RDT:
             
             if (Packet.corrupt(self):
                 self.rdt_3_0_send(p.msg_S)
-                break
+                return ret_S
                 
             if (p.seq_num != 0 and p.seq_num != (last_seq + 1)):
                 self.rdt_3_0_send(p.msg_S)
-                break
+                return ret_S
 
             last_seq = p.seq_num
             ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
@@ -122,16 +122,8 @@ if __name__ == '__main__':
         print(rdt.rdt_3_0_receive())
         rdt.disconnect()
         
-        
     else:
         sleep(1)
         print(rdt.rdt_3_0_receive())
         rdt.rdt_3_0_send('MSG_FROM_SERVER')
         rdt.disconnect()
-        
-
-
-        
-        
-
-
