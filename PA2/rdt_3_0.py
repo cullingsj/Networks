@@ -9,7 +9,7 @@ class Packet:
     seq_num_S_length = 10
     length_S_length = 10
     ## length of md5 checksum in hex
-    checksum_length = 32 
+    checksum_length = 32
         
     def __init__(self, seq_num, msg_S):
         self.seq_num = seq_num
@@ -63,14 +63,19 @@ class RDT:
     
     def disconnect(self):
         self.network.disconnect()
-        
-    def rdt_1_0_send(self, msg_S):
+
+########################
+# Our code begins here #                  
+########################    
+
+    def rdt_3_0_send(self, msg_S):
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
         
-    def rdt_1_0_receive(self):
+    def rdt_3_0_receive(self):
         ret_S = None
+        last_seq = 0
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
         #keep extracting packets - if reordered, could get more than one
@@ -84,24 +89,24 @@ class RDT:
                 return ret_S #not enough bytes to read the whole packet
             #create packet from buffer content and add to return string
             p = Packet.from_byte_S(self.byte_buffer[0:length])
+            
+            if (Packet.corrupt(self):
+                self.rdt_3_0_send(p.msg_S)
+                break
+                
+            if (p.seq_num != 0 and p.seq_num != (last_seq + 1)):
+                self.rdt_3_0_send(p.msg_S)
+                break
+
+            last_seq = p.seq_num
             ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
             #remove the packet bytes from the buffer
             self.byte_buffer = self.byte_buffer[length:]
             #if this was the last packet, will return on the next iteration
-            
-    
-    def rdt_2_1_send(self, msg_S):
-        pass
-        
-    def rdt_2_1_receive(self):
-        pass
-    
-    def rdt_3_0_send(self, msg_S):
-        pass
-        
-    def rdt_3_0_receive(self):
-        pass
-        
+
+######################
+# Our code ends here #                  
+######################        
 
 if __name__ == '__main__':
     parser =  argparse.ArgumentParser(description='RDT implementation.')
@@ -112,19 +117,21 @@ if __name__ == '__main__':
     
     rdt = RDT(args.role, args.server, args.port)
     if args.role == 'client':
-        rdt.rdt_1_0_send('MSG_FROM_CLIENT')
+        rdt.rdt_3_0_send('MSG_FROM_CLIENT')
         sleep(2)
-        print(rdt.rdt_1_0_receive())
+        print(rdt.rdt_3_0_receive())
         rdt.disconnect()
         
         
     else:
         sleep(1)
-        print(rdt.rdt_1_0_receive())
-        rdt.rdt_1_0_send('MSG_FROM_SERVER')
+        print(rdt.rdt_3_0_receive())
+        rdt.rdt_3_0_send('MSG_FROM_SERVER')
         rdt.disconnect()
         
 
 
         
         
+
+
