@@ -86,9 +86,15 @@ class RDT:
             length = int(self.byte_buffer[:Packet.length_S_length])
             if len(self.byte_buffer) < length:
                 return ret_S #not enough bytes to read the whole packet
+            
+            if (Packet.corrupt(self):
+                self.rdt_2_1_send("NACK"+p.msg_S)
+                return ret_S
+                
             #create packet from buffer content and add to return string
             p = Packet.from_byte_S(self.byte_buffer[0:length])
             ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
+            self.rdt_2_1_send("ACK")
             #remove the packet bytes from the buffer
             self.byte_buffer = self.byte_buffer[length:]
             #if this was the last packet, will return on the next iteration

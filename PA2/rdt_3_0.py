@@ -91,14 +91,15 @@ class RDT:
             p = Packet.from_byte_S(self.byte_buffer[0:length])
             
             if (Packet.corrupt(self):
-                self.rdt_3_0_send(p.msg_S)
+                self.rdt_3_0_send("NACK"+p.msg_S)
                 return ret_S
                 
             if (p.seq_num != 0 and p.seq_num != (last_seq + 1)):
-                self.rdt_3_0_send(p.msg_S)
+                self.rdt_3_0_send("NACK"+p.msg_S)
                 return ret_S
 
             last_seq = p.seq_num
+            self.rdt_3_0_send("ACK")
             ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
             #remove the packet bytes from the buffer
             self.byte_buffer = self.byte_buffer[length:]
