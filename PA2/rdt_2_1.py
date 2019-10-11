@@ -72,6 +72,10 @@ class RDT:
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
+
+    def rdt_2_1_resend(self, msg_S):
+        p = Packet(self.seq_num, msg_S)
+        self.network.udt_send(p.get_byte_S())
         
     def rdt_2_1_receive(self):
         ret_S = None
@@ -88,7 +92,7 @@ class RDT:
                 return ret_S #not enough bytes to read the whole packet
             
             if (Packet.corrupt(self):
-                self.rdt_2_1_send("NACK"+p.msg_S)
+                self.rdt_2_1_resend("NACK "+p.msg_S)
                 return ret_S
                 
             #create packet from buffer content and add to return string

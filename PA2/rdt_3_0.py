@@ -72,6 +72,10 @@ class RDT:
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
+
+    def rdt_3_0_resend(self, msg_S):
+        p = Packet(self.seq_num, msg_S)
+        self.network.udt_send(p.get_byte_S())
         
     def rdt_3_0_receive(self):
         ret_S = None
@@ -91,11 +95,11 @@ class RDT:
             p = Packet.from_byte_S(self.byte_buffer[0:length])
             
             if (Packet.corrupt(self):
-                self.rdt_3_0_send("NACK"+p.msg_S)
+                self.rdt_3_0_resend("NACK "+p.msg_S)
                 return ret_S
                 
             if (p.seq_num != 0 and p.seq_num != (last_seq + 1)):
-                self.rdt_3_0_send("NACK"+p.msg_S)
+                self.rdt_3_0_resend("NACK "+p.msg_S)
                 return ret_S
 
             last_seq = p.seq_num
