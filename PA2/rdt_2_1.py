@@ -91,7 +91,7 @@ class RDT:
             if len(self.byte_buffer) < length:
                 return ret_S #not enough bytes to read the whole packet
             
-            if (Packet.corrupt(self):
+            if (Packet.corrupt(self)):
                 self.rdt_2_1_resend("NACK "+p.msg_S)
                 return ret_S
                 

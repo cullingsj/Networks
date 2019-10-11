@@ -94,7 +94,7 @@ class RDT:
             #create packet from buffer content and add to return string
             p = Packet.from_byte_S(self.byte_buffer[0:length])
             
-            if (Packet.corrupt(self):
+            if (Packet.corrupt(self)):
                 self.rdt_3_0_resend("NACK "+p.msg_S)
                 return ret_S
                 
