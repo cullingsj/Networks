@@ -43,11 +43,16 @@ if __name__ == '__main__':
             else:
                 continue
         time_of_last_data = time.time()
-        
+
         #convert and reply
-        rep_msg_S = piglatinize(msg_S)
-        print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S))
-        rdt.rdt_2_1_send(rep_msg_S)
+        if (msg_S[:3] == 'NAK'):
+            print("<< NAK received >>\n")
+            rdt.rdt_2_1_send('NAK')
+        else:
+            print("Sending ACK\n")
+            rep_msg_S = 'ACK '+piglatinize(msg_S)
+            print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S[3:]))
+            rdt.rdt_2_1_send(rep_msg_S)
         
     rdt.disconnect()
 

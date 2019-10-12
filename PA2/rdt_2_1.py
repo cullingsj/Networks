@@ -6,10 +6,10 @@ import hashlib
 
 class Packet:
     ## the number of bytes used to store packet length
-    seq_num_S_length = 9
+    seq_num_S_length = 10
     length_S_length = 10
     ## length of md5 checksum in hex
-    checksum_length = 32
+    checksum_length = 32 
         
     def __init__(self, seq_num, msg_S):
         self.seq_num = seq_num
@@ -18,13 +18,18 @@ class Packet:
     @classmethod
     def from_byte_S(self, byte_S):
         if Packet.corrupt(byte_S):
-            raise RuntimeError('Cannot initialize Packet: byte_S is corrupt')
-        #extract the fields
-        #ack = int(byte_S[Packet.length_S_length+Packet.length_S_length : Packet.length_S_length+Packet.length_S_length + 1])
-        seq_num = int(byte_S[Packet.length_S_length : Packet.length_S_length+Packet.seq_num_S_length])
-        msg_S = byte_S[Packet.length_S_length+Packet.seq_num_S_length+Packet.checksum_length :]
-        return self(seq_num, msg_S)
+            print("\n<< Corrupt packet, sending NAK >>\n")
+            msg_S = 'NAK'+byte_S[Packet.length_S_length+Packet.seq_num_S_length+Packet.checksum_length :]
 
+            #raise RuntimeError('Cannot initialize Packet: byte_S is corrupt')
+        else:
+            msg_S = byte_S[Packet.length_S_length+Packet.seq_num_S_length+Packet.checksum_length :]
+
+        #extract the fields
+        seq_num = int(byte_S[Packet.length_S_length : Packet.length_S_length+Packet.seq_num_S_length])
+        return self(seq_num, msg_S)
+        
+        
     def get_byte_S(self):
         #convert sequence number of a byte field of seq_num_S_length bytes
         seq_num_S = str(self.seq_num).zfill(self.seq_num_S_length)
@@ -56,47 +61,23 @@ class RDT:
     ## latest sequence number used in a packet
     seq_num = 1
     ## buffer of bytes read from network
-    byte_buffer = ''
-    base = 1
+    byte_buffer = '' 
 
     def __init__(self, role_S, server_S, port):
         self.network = Network.NetworkLayer(role_S, server_S, port)
     
     def disconnect(self):
         self.network.disconnect()
-
-    def lookForAck(self):
-        byte_S = self.network.udt_receive()
-        p = Packet.from_byte_S(byte_S)
-        if (p.seq_num >= base):
-            print("Received ACK")
-            base = p.seq_num+1
-            return True
-        else:
-            print("Received NAK")
-            return False
         
     def rdt_2_1_send(self, msg_S):
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
-        while(not rdt.lookForAck()):
-            self.network.udt_send(p.get_byte_S())
-    
+        
     def rdt_2_1_receive(self):
         ret_S = None
         byte_S = self.network.udt_receive()
-        
-        while(Packet.corrupt(byte_S)):
-            print("Sent NAK")
-            pack = Packet(0, '')
-            self.network.udt_send(p.get_byte_S())
-            byte_S = self.network.udt_receive()
-
         self.byte_buffer += byte_S
-        recv = Packet.from_byte_S(self.byte_buffer[0:length])
-        pkt = Packet(recv.seq_num, '')
-        self.network.udt_send(self.base-1)
         
         #keep extracting packets - if reordered, could get more than one
         while True:
@@ -113,13 +94,7 @@ class RDT:
             #remove the packet bytes from the buffer
             self.byte_buffer = self.byte_buffer[length:]
             #if this was the last packet, will return on the next iteration
-    
-    def rdt_3_0_send(self, msg_S):
-        pass
-        
-    def rdt_3_0_receive(self):
-        pass
-        
+
 
 if __name__ == '__main__':
     parser =  argparse.ArgumentParser(description='RDT implementation.')

@@ -68,29 +68,11 @@ class RDT:
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
-        while True:
-            byte_S = self.network.udt_receive()
-            buffer = self.byte_buffer + byte_S
-            length = int(buffer[:Packet.length_S_length])
-            pkt = Packet.from_byte_S(buffer[0:length])
-            if(pkt.msg_S == 'NAK'):
-                self.network.udt_send(p.get_byte_S())
-            else:
-                break
-            
         
     def rdt_1_0_receive(self):
         ret_S = None
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
-        while(not Packet.corrupt(byte_S)):
-            resp = Packet(0, 'NAK')
-            self.network.udt_send(resp.get_byte_S())
-            byte_S = self.network.udt_receive()
-
-        resp = Packet(0, 'ACK')
-        self.network.udt_send(resp.get_byte_S())
-        
         #keep extracting packets - if reordered, could get more than one
         while True:
             #check if we have received enough bytes
