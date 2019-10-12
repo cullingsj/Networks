@@ -9,11 +9,13 @@ class Packet:
     seq_num_S_length = 10
     length_S_length = 10
     ## length of md5 checksum in hex
-    checksum_length = 32 
+    checksum_length = 32
+    ACK = 0
         
     def __init__(self, seq_num, msg_S):
         self.seq_num = seq_num
         self.msg_S = msg_S
+        self.
         
     @classmethod
     def from_byte_S(self, byte_S):
@@ -66,19 +68,20 @@ class RDT:
 
     def lookForNak(self):
         byte_S = self.network.udt_receive()
-        self.byte_buffer += byte_S
-        p = Packet.from_byte_S(self.byte_buffer[0:length])
+        p = Packet.from_byte_S(byte_S)
         if (p.msg_S == "NAK"):
+            print("Received NAK")
             return True
         else:
+            print("lookForNak returned False")
             return False
         
     def rdt_2_1_send(self, msg_S):
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
-        if(rdt.lookForNak()):
-            rdt_2_1_resend(msg_S)
+        while(rdt.lookForNak()):
+            self.network.udt_send(p.get_byte_S())
         
     def rdt_2_1_resend(self, msg_S):
         p = Packet(self.seq_num, msg_S)
@@ -89,13 +92,17 @@ class RDT:
     def rdt_2_1_receive(self):
         ret_S = None
         byte_S = self.network.udt_receive()
+        
+        while(Packet.corrupt(byte_S)):
+            print("Sent NAK")
+            self.network.udt_send("NAK")
+            byte_S = self.network.udt_receive()
+
+
         self.byte_buffer += byte_S
-        if(Packet.corrupt(byte_S)):
-            rdt.rdt_2_1_send("NAK")
-            return ret_S
-        else:
-            rdt.rdt_2_1_send("ACK")
-            
+        print("Sent ACK")
+        self.network.udt_send("ACK")
+        
         #keep extracting packets - if reordered, could get more than one
         while True:
             #check if we have received enough bytes
