@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser =  argparse.ArgumentParser(description='Pig Latin conversion server.')
     parser.add_argument('port', help='Port.', type=int)
     args = parser.parse_args()
-    recPkts = [''] 
+    #recPkts = [''] 
     
     timeout = 5 #close connection if no new data within 5 seconds
     time_of_last_data = time.time()
@@ -49,11 +49,11 @@ if __name__ == '__main__':
         if (msg_S[:3] == 'NAK'):
             print("<< NAK received >>\n")
             rdt.rdt_3_0_send('NAK')
-        elif(msg_S in recPkts):
-            print("Duplicate packet received")
+        #elif(msg_S in recPkts):
+        #    print("Duplicate packet received")
         else:
             print("Sending ACK\n")
-            recPkts.append(msg_S)
+            #recPkts.append(msg_S)
             rep_msg_S = 'ACK '+piglatinize(msg_S)
             print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S[3:]))
             rdt.rdt_3_0_send(rep_msg_S)
