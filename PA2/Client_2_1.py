@@ -1,5 +1,5 @@
 import argparse
-import rdt_2_1 as RDT
+import RDT
 import time
 
 if __name__ == '__main__':
@@ -29,7 +29,6 @@ if __name__ == '__main__':
             msg_S = rdt.rdt_2_1_receive()
             if msg_S is None:
                 if time_of_last_data + timeout < time.time():
-                    rdt.rdt_2_1_resend(msg_S)
                     break
                 else:
                     continue
