@@ -53,6 +53,14 @@ if __name__ == '__main__':
             rep_msg_S = 'ACK '+piglatinize(msg_S)
             print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S[3:]))
             rdt.rdt_2_1_send(rep_msg_S)
+            '''
+            msg_Re = rdt.rdt_2_1_receive()
+            while (msg_Re[:3] == 'NAK'):
+                rdt.rdt_2_1_send(rep_msg_S)
+                msg_Re = rdt.rdt_2_1_receive()
+                '''
+                
+            
         
     rdt.disconnect()
 
