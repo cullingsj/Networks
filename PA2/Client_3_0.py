@@ -19,10 +19,9 @@ if __name__ == '__main__':
     time_of_last_data = time.time()
      
     rdt = RDT.RDT('client', args.server, args.port)
-    for i in range(0,4):
+    for i in range(0,5):
         msg_S = msg_L[i]
         rdt.rdt_3_0_send(msg_S)
-        nakFlag = 0
         recPkt = ['']
         # try to receive message before timeout 
         msg_In = None
@@ -31,20 +30,20 @@ if __name__ == '__main__':
             
             if msg_In is None:
                 if time_of_last_data + timeout < time.time():
-                    rdt.rdt_3_0_send(msg_S)
-                    break
+                    print("<< Packet timeout resending >>")
+                    i = i-1
                 else:
                     continue
              
             time_of_last_data = time.time()
             
-            if(msg_In[:3] == 'NAK'):
+            if(msg_In and msg_In[:3] == 'NAK'):
                 print("NAK RECEIVED FOR: \n"+msg_S+"\n")
                 i = i-1
         
             #print the result
-            if(msg_In and not (msg_In in recPkt)):
-                recPkt.append(msg_In)
+            if(msg_In):
+                #recPkt.append(msg_In)
                 print("ACK RECEIVED FOR: ")
                 print('Converting: '+msg_S)
                 print('to: '+msg_In[6:]+'\n')
