@@ -44,10 +44,14 @@ if __name__ == '__main__':
     for t in thread_L:
         t.start()
     
-    
+    host2Messages = ['I wanna be the very best, like no one ev',
+                     'er was to catch them is my real test to ']
     #create some send events    
     for i in range(3):
         client.udt_send(2, 'Sample data %d' % i)
+
+    for i in range(2):
+        server.udt_send(1, host2Messages[i])
     
     
     #give the network sufficient time to transfer all packets before quitting
