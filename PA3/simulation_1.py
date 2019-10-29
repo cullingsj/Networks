@@ -49,6 +49,10 @@ if __name__ == '__main__':
     #create some send events    
     for i in range(3):
         client.udt_send(2, 'Sample data %d' % i)
+
+    for i in range(2):
+        server.udt_send(1, host2Messages[i])
+    
     
     #give the network sufficient time to transfer all packets before quitting
     sleep(simulation_time)
