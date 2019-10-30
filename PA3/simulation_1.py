@@ -3,14 +3,14 @@ Created on Oct 12, 2016
 
 @author: mwittie
 '''
-import network
-import link
+import network_1 as network
+import link_1 as link
 import threading
 from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 1 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 2 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -44,14 +44,15 @@ if __name__ == '__main__':
     for t in thread_L:
         t.start()
     
-    host2Messages = ['I wanna be the very best, like no one ev',
-                     'er was to catch them is my real test to ']
-    #create some send events    
-    for i in range(3):
-        client.udt_send(2, 'Sample data %d' % i)
+    host2Messages = ['1: I wanna be the very best, like no one',
+                     '2: ever was to catch them is my real tes']
+    
+    #create some send events
+    '''for i in range(3):
+        client.udt_send(2, 'Sample data %d' % i)'''
 
     for i in range(2):
-        server.udt_send(1, host2Messages[i])
+        client.udt_send(2, host2Messages[i])
     
     
     #give the network sufficient time to transfer all packets before quitting
