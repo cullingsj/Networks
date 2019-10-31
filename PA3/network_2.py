@@ -97,10 +97,13 @@ class Host:
         pkt_S = self.in_intf_L[0].get()
         if pkt_S is not None:
             if(pkt_S[len(pkt_S)-5:] == 'SGMNT'):
-                reconstruct = ''
-                while(pkt_S is not None and not (pkt_S[len(pkt_S)-5:] == 'SDONE')):
-                    reconstruct += pkt_S[:len(pkt_S)-5]
-                    pkt_S = self.in_intf_L[0].get()
+                reconstruct = pkt_S[:5]
+                while(not (pkt_S[len(pkt_S)-5:] == 'SDONE')):
+                    reconstruct += pkt_S[5:len(pkt_S)-5]
+                    pkt_S = None
+                    while(pkt_S == None):
+                        pkt_S = self.in_intf_L[0].get()
+                        
                 pkt_S = reconstruct
             print('\n%s: received packet "%s" on the in interface' % (self, pkt_S))
        
@@ -156,6 +159,8 @@ class Router:
                             % (self, p, i, i, self.out_intf_L[i].mtu, pktOut))
                             if(len(p.remaining_data_S) == 0):
                                 self.out_intf_L[i].put(str(p.dst_addr).zfill(p.dst_addr_S_length)+'SDONE', True)
+                                print('Segmentation complete, sending SDONE tag')
+                                
                     else:
                         self.out_intf_L[i].put(p.to_byte_S(), True)
                         print('\n%s: forwarding packet "%s" from interface %d to %d with mtu %d\n' \
