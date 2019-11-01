@@ -41,12 +41,15 @@ if __name__ == '__main__':
     #link parameters: from_node, from_intf_num, to_node, to_intf_num, mtu
     link_layer.add_link(link.Link(host_1, 0, router_a, 0, 50))
     link_layer.add_link(link.Link(host_2, 0, router_a, 0, 50))
+    
     link_layer.add_link(link.Link(router_a, 0, router_b, 0, 30))
-    link_layer.add_link(link.Link(router_a, 0, router_c, 0, 30))
+    link_layer.add_link(link.Link(router_a, 1, router_c, 0, 30))
+    
     link_layer.add_link(link.Link(router_b, 0, router_d, 0, 30))
     link_layer.add_link(link.Link(router_c, 0, router_d, 0, 30))
+    
     link_layer.add_link(link.Link(router_d, 0, host_3, 0, 30))
-    link_layer.add_link(link.Link(router_d, 0, host_4, 0, 30))
+    link_layer.add_link(link.Link(router_d, 1, host_4, 0, 30))
     
     
     #start all the objects
@@ -71,7 +74,7 @@ if __name__ == '__main__':
         host_1.udt_send(2, 'Sample data %d' % i)'''
 
     for i in range(2):
-        host_1.udt_send(2, host2Messages[i])
+        host_1.udt_send(3, host2Messages[i])
     
     
     #give the network sufficient time to transfer all packets before quitting
