@@ -18,12 +18,14 @@ if __name__ == '__main__':
     #create network nodes
     host_1 = network.Host(1)
     object_L.append(host_1)
-    host_3 = network.Host(3)
-    object_L.append(host_3)
     host_2 = network.Host(2)
     object_L.append(host_2)
+    
+    host_3 = network.Host(3)
+    object_L.append(host_3)
     host_4 = network.Host(4)
     object_L.append(host_4)
+    
     router_a = network.Router(name='A', intf_count=1, max_queue_size=router_queue_size)
     object_L.append(router_a)
     router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size)
