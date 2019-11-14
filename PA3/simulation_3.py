@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 2 #give the network sufficient time to transfer all packets before quitting
+simulation_time = 16 #give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads
@@ -26,13 +26,13 @@ if __name__ == '__main__':
     host_4 = network.Host(4)
     object_L.append(host_4)
     
-    router_a = network.Router(name='A', intf_count=1, max_queue_size=router_queue_size)
+    router_a = network.Router(name='A', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_a)
-    router_b = network.Router(name='B', intf_count=1, max_queue_size=router_queue_size)
+    router_b = network.Router(name='B', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_b)
-    router_c = network.Router(name='C', intf_count=1, max_queue_size=router_queue_size)
+    router_c = network.Router(name='C', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_c)
-    router_d = network.Router(name='D', intf_count=1, max_queue_size=router_queue_size)
+    router_d = network.Router(name='D', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_d)
     
     #create a Link Layer to keep track of links between network nodes
@@ -42,13 +42,13 @@ if __name__ == '__main__':
     #add all the links
     #link parameters: from_node, from_intf_num, to_node, to_intf_num, mtu
     link_layer.add_link(link.Link(host_1, 0, router_a, 0, 50))
-    link_layer.add_link(link.Link(host_2, 0, router_a, 0, 50))
+    link_layer.add_link(link.Link(host_2, 0, router_a, 1, 50))
     
-    link_layer.add_link(link.Link(router_a, 0, router_b, 0, 30))
-    link_layer.add_link(link.Link(router_a, 1, router_c, 0, 30))
+    link_layer.add_link(link.Link(router_a, 0, router_b, 0, 50))
+    link_layer.add_link(link.Link(router_a, 1, router_c, 0, 50))
     
-    link_layer.add_link(link.Link(router_b, 0, router_d, 0, 30))
-    link_layer.add_link(link.Link(router_c, 0, router_d, 0, 30))
+    link_layer.add_link(link.Link(router_b, 0, router_d, 0, 50))
+    link_layer.add_link(link.Link(router_c, 0, router_d, 1, 50))
     
     link_layer.add_link(link.Link(router_d, 0, host_3, 0, 30))
     link_layer.add_link(link.Link(router_d, 1, host_4, 0, 30))
@@ -57,7 +57,9 @@ if __name__ == '__main__':
     #start all the objects
     thread_L = []
     thread_L.append(threading.Thread(name=host_1.__str__(), target=host_1.run))
+    thread_L.append(threading.Thread(name=host_2.__str__(), target=host_2.run))
     thread_L.append(threading.Thread(name=host_3.__str__(), target=host_3.run))
+    thread_L.append(threading.Thread(name=host_4.__str__(), target=host_4.run))
     thread_L.append(threading.Thread(name=router_a.__str__(), target=router_a.run))
     thread_L.append(threading.Thread(name=router_b.__str__(), target=router_b.run))
     thread_L.append(threading.Thread(name=router_c.__str__(), target=router_c.run))
@@ -68,7 +70,7 @@ if __name__ == '__main__':
     for t in thread_L:
         t.start()
     
-    host2Messages = [' I wanna be the very best, like no one e',
+    hostMessages = [' I wanna be the very best, like no one e',
                      ' ver was to catch them is my real test..']
     
     #create some send events
@@ -76,7 +78,11 @@ if __name__ == '__main__':
         host_1.udt_send(2, 'Sample data %d' % i)'''
 
     for i in range(2):
-        host_1.udt_send(3, host2Messages[i])
+        host_1.udt_send(i+3, hostMessages[i])
+
+    for i in range(2):
+        host_2.udt_send(i+3, hostMessages[i])
+    
     
     
     #give the network sufficient time to transfer all packets before quitting

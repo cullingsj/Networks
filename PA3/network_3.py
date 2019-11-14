@@ -105,7 +105,7 @@ class Host:
                         pkt_S = self.in_intf_L[0].get()
                         
                 pkt_S = reconstruct
-            print('\n%s: received packet "%s" on the in interface' % (self, pkt_S))
+            print('%s: RECEIVED packet "%s" on the in interface' % (self, pkt_S))
        
     ## thread target for the host to keep receiving data
     def run(self):
@@ -151,29 +151,41 @@ class Router:
                     # HERE you will need to implement a lookup into the 
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
-                    if (len(str(p)) > self.out_intf_L[i].mtu):
+                    if(self.name == 'A'):
+                        out_channel = i
+                    elif(self.name == 'B' or self.name == 'C'):
+                        out_channel = 0
+                    elif(self.name == 'D'):
+                        if(int(pkt_S[4]) == 3):
+                            out_channel = 0
+                        elif (int(pkt_S[4]) == 4):
+                            out_channel = 1
+                    else:
+                        out_channel = i
+        
+                    if (len(str(p)) > self.out_intf_L[out_channel].mtu):
                         while (len(p.remaining_data_S) > 0):
-                            pktOut = p.to_reduc_byte_S(self.out_intf_L[i].mtu)
-                            self.out_intf_L[i].put(pktOut, True)
+                            pktOut = p.to_reduc_byte_S(self.out_intf_L[out_channel].mtu)
+                            self.out_intf_L[out_channel].put(pktOut, True)
                             print('\n%s: Segmenting packet "%s" from interface %d to %d with mtu %d\nSent:%s\n' \
-                            % (self, p, i, i, self.out_intf_L[i].mtu, pktOut))
+                            % (self, p, out_channel, out_channel, self.out_intf_L[out_channel].mtu, pktOut))
                             if(len(p.remaining_data_S) == 0):
-                                self.out_intf_L[i].put(str(p.dst_addr).zfill(p.dst_addr_S_length)+'SDONE', True)
+                                self.out_intf_L[out_channel].put(str(p.dst_addr).zfill(p.dst_addr_S_length)+'SDONE', True)
                                 print('Segmentation complete, sending SDONE tag')
                                 
                     else:
-                        self.out_intf_L[i].put(p.to_byte_S(), True)
-                        print('\n%s: forwarding packet "%s" from interface %d to %d with mtu %d\n' \
-                            % (self, p, i, i, self.out_intf_L[i].mtu))
+                        self.out_intf_L[out_channel].put(p.to_byte_S(), True)
+                        print('%s: forwarding packet "%s" from interface %d to %d with mtu %d\n' \
+                            % (self, p, out_channel, out_channel, self.out_intf_L[out_channel].mtu))
             except queue.Full:
-                print('\n%s: packet "%s" lost on interface %d\n' % (self, p, i))
+                print('%s: packet "%s" lost on interface %d\n' % (self, p, out_channel))
                 pass
                 
     ## thread target for the host to keep forwarding data
     def run(self):
-        print ('\n' + threading.currentThread().getName() + ': Starting')
+        print (threading.currentThread().getName() + ': Starting')
         while True:
             self.forward()
             if self.stop:
-                print ('\n' + threading.currentThread().getName() + ': Ending')
+                print (threading.currentThread().getName() + ': Ending')
                 return 
