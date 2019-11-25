@@ -1,5 +1,5 @@
-import network
-import link
+import network_1 as network
+import link_1 as link
 import threading
 from time import sleep
 import sys
@@ -52,16 +52,17 @@ if __name__ == '__main__':
     router_a.send_routes(1) #one update starts the routing process
     
     sleep(simulation_time)  #let the tables converge
+
     print("Converged routing tables")
     for obj in object_L:
-        if str(type(obj)) == "<class 'network.Router'>":
+        if str(type(obj)) == "<class 'network_1.Router'>":
             for obj2 in object_L:
-                if not(obj == obj2) and str(type(obj2)) == "<class 'network.Router'>":
-                    obj.converge_tables(obj2)
+                if not(obj == obj2) and str(type(obj2)) == "<class 'network_1.Router'>":
+                    obj.converge_tables(router_b)
     sleep(simulation_time)       
     for obj in object_L:
-        if str(type(obj)) == "<class 'network.Router'>":
-            obj.print_routes()
+        if str(type(obj)) == "<class 'network_1.Router'>":
+            router_a.print_routes()
 
     #send packet from host 1 to host 2'
     host_1.udt_send('H2', 'MESSAGE_FROM_H1')

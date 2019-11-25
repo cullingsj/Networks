@@ -176,14 +176,17 @@ class Router:
         self.routers[router_in.name] = ''
         for destination in self.rt_tbl_D:
             #print(destination)
-            if(str(destination) == router_in.name):
+            '''if(str(destination) == router_in.name):
                 #print("entered into first if with self at %s and router_in at %s" % (destination, router_in.name))
                 self.rt_tbl_D[router_in.name].update({router_in.name: 0})
-                print(self.rt_tbl_D)
 
-            else:
-                self.rt_tbl_D[destination][router_in.name] = router_in.rt_tbl_D[destination][router_in.name]
+            else:'''
+            if((router_in.name not in self.rt_tbl_D[destination])):
+                temp = {router_in.name: int(router_in.rt_tbl_D[destination][router_in.name])}
+                self.rt_tbl_D[destination].update(temp)
 
+            print(self.rt_tbl_D)
+            
     ## called when printing the object
     def __str__(self):
         return self.name
@@ -256,6 +259,8 @@ class Router:
             #print("Setting data for %s with cost of %s" % (data[:2], data[4]))
             newCost = int(data[4]) + self.rt_tbl_D[data[2:4]][self.name]
             self.rt_tbl_D[data[:2]] = {self.name: newCost}
+            self.rt_tbl_D[data[:2]].update({data[2:4]: int(data[4])})
+            self.routers[data[2:4]]=''
             change = True
         if(change):
             self.send_routes(i)
