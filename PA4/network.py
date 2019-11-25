@@ -105,14 +105,14 @@ class Host:
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst, data_S):
         p = NetworkPacket(dst, 'data', data_S)
-        print('%s: sending packet "%s"' % (self, p))
+        #print('%s: sending packet "%s"' % (self, p))
         self.intf_L[0].put(p.to_byte_S(), 'out') #send packets always enqueued successfully
         
     ## receive packet from the network layer
     def udt_receive(self):
         pkt_S = self.intf_L[0].get('in')
-        if pkt_S is not None:
-            print('%s: received packet "%s"' % (self, pkt_S))
+        '''if pkt_S is not None:
+            print('%s: received packet "%s"' % (self, pkt_S))'''
        
     ## thread target for the host to keep receiving data
     def run(self):
@@ -145,7 +145,7 @@ class Router:
 
         for i in cost_D:
             for entry in cost_D[i]:
-                self.rt_tbl_D[i] = {name: entry}
+                self.rt_tbl_D[i] = {name: cost_D[i][entry]}
             
         print('%s: Initialized routing table' % self)
         self.print_routes()
@@ -154,11 +154,9 @@ class Router:
     ## Print routing table
     def print_routes(self):
         #TODO: print the routes as a two dimensional table
-        print("Printing routing table")
+        print("\nPrinting routing table")
         if(len(self.rt_tbl_D)>0):
-            for i in range(len(self.rt_tbl_D)):
-                print("===", end='')
-            print("====")
+            print((len(self.rt_tbl_D)*3+4)*'=')
             print("|%s" % self.name, end='')
             for destination in self.rt_tbl_D:
                 print("|%s" % destination, end='')
@@ -167,11 +165,7 @@ class Router:
             for i in self.rt_tbl_D:
                 for cost in self.rt_tbl_D[i]:
                     print("| %s" % self.rt_tbl_D[i][cost], end='')
-            print("|")
-             
-            for i in range(len(self.rt_tbl_D)):
-                print("===", end='')
-            print("====\n")
+            print("|\n"+(len(self.rt_tbl_D)*3+4)*'=')
         else:
             print("empty routing table")
 
@@ -207,10 +201,10 @@ class Router:
             # forwarding table to find the appropriate outgoing interface
             # for now we assume the outgoing interface is 1
             self.intf_L[1].put(p.to_byte_S(), 'out', True)
-            print('%s: forwarding packet "%s" from interface %d to %d' % \
-                (self, p, i, 1))
+            #print('%s: forwarding packet "%s" from interface %d to %d' % \
+                #(self, p, i, 1))
         except queue.Full:
-            print('%s: packet "%s" lost on interface %d' % (self, p, i))
+            #print('%s: packet "%s" lost on interface %d' % (self, p, i))
             pass
 
 
@@ -219,13 +213,17 @@ class Router:
     def send_routes(self, i):
         # TODO: Send out a routing table update
         #create a routing table update packet
-        p = NetworkPacket(0, 'control', 'DUMMY_ROUTING_TBL')
-        try:
-            print('%s: sending routing update "%s" from interface %d' % (self, p, i))
-            self.intf_L[i].put(p.to_byte_S(), 'out', True)
-        except queue.Full:
-            print('%s: packet "%s" lost on interface %d' % (self, p, i))
-            pass
+        for j in range(len(self.intf_L)):
+            for destination in self.rt_tbl_D:
+                for router in self.rt_tbl_D[destination]:
+                    #print("PRINTING SEND_ROUTES PACKET"+str(destination)+self.name+str(self.rt_tbl_D[destination][router]))
+                    p = NetworkPacket(0, 'control', str(destination)+self.name+str(self.rt_tbl_D[destination][router]))
+                    try:
+                        #print('%s: sending routing update "%s" from interface %d' % (self, p, j))
+                        self.intf_L[j].put(p.to_byte_S(), 'out', True)
+                    except queue.Full:
+                        #print('%s: packet "%s" lost on interface %d' % (self, p, j))
+                        pass
 
 
     ## forward the packet according to the routing table
@@ -233,8 +231,19 @@ class Router:
     def update_routes(self, p, i):
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
-        
-        print('%s: Received routing update %s from interface %d' % (self, p, i))
+        data = p.data_S
+        change = False
+        if(data[:2] == self.name):
+            pass
+        elif(data[:2] not in self.rt_tbl_D or int(data[4]) < self.rt_tbl_D[data[:2]][self.name]):
+            #print("Setting data for %s with cost of %s" % (data[:2], data[4]))
+            newCost = int(data[4]) + self.rt_tbl_D[data[2:4]][self.name]
+            self.rt_tbl_D[data[:2]] = {self.name: newCost}
+            change = True
+        if(change):
+            self.send_routes(i)
+            
+        #print('%s: Received routing update %s from interface %d' % (self, p, i))
 
                 
     ## thread target for the host to keep forwarding data
