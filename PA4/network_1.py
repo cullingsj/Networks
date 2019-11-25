@@ -175,17 +175,14 @@ class Router:
         print("converging tables %s and %s" % (self.name, router_in.name))
         self.routers[router_in.name] = ''
         for destination in self.rt_tbl_D:
-            #print(destination)
-            '''if(str(destination) == router_in.name):
-                #print("entered into first if with self at %s and router_in at %s" % (destination, router_in.name))
-                self.rt_tbl_D[router_in.name].update({router_in.name: 0})
-
-            else:'''
             if((router_in.name not in self.rt_tbl_D[destination])):
                 temp = {router_in.name: int(router_in.rt_tbl_D[destination][router_in.name])}
                 self.rt_tbl_D[destination].update(temp)
 
             print(self.rt_tbl_D)
+        for neighbor in self.cost_D:
+            interface = self.cost_D[neighbor].keys()[0]
+            self.cost_D[neighbor][interface] = self.rt_tbl_D[neighbor][self.name]
             
     ## called when printing the object
     def __str__(self):
@@ -218,8 +215,11 @@ class Router:
             # TODO: Here you will need to implement a lookup into the 
             # forwarding table to find the appropriate outgoing interface
             # for now we assume the outgoing interface is 1
-            
-                self.intf_L[1].put(p.to_byte_S(), 'out', True)
+            lowest = 0
+            for j in range (len(self.intf_L)):
+                if(not j == i and self.cost_D[]):
+                    self.cost_D
+            self.intf_L[1].put(p.to_byte_S(), 'out', True)
             #print('%s: forwarding packet "%s" from interface %d to %d' % \
                 #(self, p, i, 1))
         except queue.Full:
