@@ -138,10 +138,15 @@ class Router:
         self.name = name
         #create a list of interfaces
         self.intf_L = [Interface(max_queue_size) for _ in range(len(cost_D))]
-        #save neighbors and interfeces on which we connect to them
+        #save neighbors and interfaces on which we connect to them
         self.cost_D = cost_D    # {neighbor: {interface: cost}}
         #TODO: set up the routing table for connected hosts
-        self.rt_tbl_D = {}      # {destination: {router: cost}}
+        self.rt_tbl_D = {name: {name: 0}} # {destination: {router: cost}}
+
+        for i in cost_D:
+            for entry in cost_D[i]:
+                self.rt_tbl_D[i] = {name: entry}
+            
         print('%s: Initialized routing table' % self)
         self.print_routes()
     
@@ -151,18 +156,22 @@ class Router:
         #TODO: print the routes as a two dimensional table
         print("Printing routing table")
         if(len(self.rt_tbl_D)>0):
-            for i in range(len(self.rt_tbl_D[0])):
-                print("==", end='')
-            print("\n")
-            
-            for i in range(len(self.rt_tbl_D[0])):
-                print("|")
-                for j in range(len(self.rt_tbl_D)):
-                    print(self.rt_tbl_D[i,j], end='|')
-                    
-            for i in range(len(self.rt_tbl_D[0])):
-                print("==", end='')
-            print("\n")
+            for i in range(len(self.rt_tbl_D)):
+                print("===", end='')
+            print("====")
+            print("|%s" % self.name, end='')
+            for destination in self.rt_tbl_D:
+                print("|%s" % destination, end='')
+                
+            print("|\n|%s" % self.name, end='')
+            for i in self.rt_tbl_D:
+                for cost in self.rt_tbl_D[i]:
+                    print("| %s" % self.rt_tbl_D[i][cost], end='')
+            print("|")
+             
+            for i in range(len(self.rt_tbl_D)):
+                print("===", end='')
+            print("====\n")
         else:
             print("empty routing table")
 
@@ -210,7 +219,7 @@ class Router:
     def send_routes(self, i):
         # TODO: Send out a routing table update
         #create a routing table update packet
-        p = NetworkPacket(0, 'control', 'DUMMY_ROUTING_TABLE')
+        p = NetworkPacket(0, 'control', 'DUMMY_ROUTING_TBL')
         try:
             print('%s: sending routing update "%s" from interface %d' % (self, p, i))
             self.intf_L[i].put(p.to_byte_S(), 'out', True)
@@ -224,6 +233,7 @@ class Router:
     def update_routes(self, p, i):
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
+        
         print('%s: Received routing update %s from interface %d' % (self, p, i))
 
                 
