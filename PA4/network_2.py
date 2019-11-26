@@ -155,9 +155,7 @@ class Router:
     ## Print routing table
     def print_routes(self):
         #TODO: print the routes as a two dimensional table
-        print("Entered into ")
         if(len(self.rt_tbl_D)>0):
-            print(self.rt_tbl_D)
             print((len(self.rt_tbl_D)*3+4)*'=')
             print("|%s" % self.name, end='')
             for destination in self.rt_tbl_D:
@@ -218,10 +216,10 @@ class Router:
             entrySaved = ''
             #print("Printing dest %s" % p.dst[5-p.dst_S_length:])
             for entry in self.cost_D:
-                if(not self.cost_D[entry] == i and not str(entry)[:1] == 'H'):
-                    if (self.rt_tbl_D[dest][entry] < lowest):
-                        lowest = self.rt_tbl_D[dest][entry]
-                        for face in self.cost_D[entry]:
+                for face in self.cost_D[entry]:
+                    if(not (face == i) and not str(entry)[:1] == 'H'):
+                        if (self.rt_tbl_D[dest][entry] < lowest):
+                            lowest = self.rt_tbl_D[dest][entry]
                             entrySaved = entry
                             interface = int(face)
             print("Taking interface %d from %s to %s" % (interface, self.name, entrySaved))
