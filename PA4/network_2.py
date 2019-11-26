@@ -217,7 +217,7 @@ class Router:
             #print("Printing dest %s" % p.dst[5-p.dst_S_length:])
             for entry in self.cost_D:
                 for face in self.cost_D[entry]:
-                    if(not (face == i) and not str(entry)[:1] == 'H'):
+                    if(not (face == i) and (not str(entry)[:1] == 'H' or str(entry)==dest)):
                         if (self.rt_tbl_D[dest][entry] < lowest):
                             lowest = self.rt_tbl_D[dest][entry]
                             entrySaved = entry
