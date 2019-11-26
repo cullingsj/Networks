@@ -179,10 +179,10 @@ class Router:
                 temp = {router_in.name: int(router_in.rt_tbl_D[destination][router_in.name])}
                 self.rt_tbl_D[destination].update(temp)
 
-            print(self.rt_tbl_D)
-        for neighbor in self.cost_D:
-            interface = self.cost_D[neighbor].keys()[0]
-            self.cost_D[neighbor][interface] = self.rt_tbl_D[neighbor][self.name]
+            #print(self.rt_tbl_D)
+        '''for neighbor in self.cost_D:
+            interface = self.cost_D[neighbor].keys()
+            self.cost_D[neighbor][interface] = self.rt_tbl_D[neighbor][self.name]'''
             
     ## called when printing the object
     def __str__(self):
@@ -215,10 +215,18 @@ class Router:
             # TODO: Here you will need to implement a lookup into the 
             # forwarding table to find the appropriate outgoing interface
             # for now we assume the outgoing interface is 1
-            lowest = 0
-            for j in range (len(self.intf_L)):
-                if(not j == i and self.cost_D[]):
-                    self.cost_D
+            '''lowest = 100
+            interface = 1
+            dest = p.dst[5-p.dst_S_length:]
+            #print("Printing dest %s" % p.dst[5-p.dst_S_length:])
+            for entry in self.cost_D:
+                if(not self.cost_D[entry] == i and not str(entry)[:1] == 'H'):
+                    if (self.rt_tbl_D[dest][entry] < lowest):
+                        lowest = self.rt_tbl_D[dest][entry]
+                        for face in self.cost_D[entry]:
+                            interface = int(face)
+            print("Taking path %d from %s to %s" % (interface, self.name, self.cost_D[dest][interface]))
+            self.intf_L[interface].put(p.to_byte_S(), 'out', True)'''
             self.intf_L[1].put(p.to_byte_S(), 'out', True)
             #print('%s: forwarding packet "%s" from interface %d to %d' % \
                 #(self, p, i, 1))

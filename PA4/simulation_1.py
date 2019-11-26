@@ -58,11 +58,11 @@ if __name__ == '__main__':
         if str(type(obj)) == "<class 'network_1.Router'>":
             for obj2 in object_L:
                 if not(obj == obj2) and str(type(obj2)) == "<class 'network_1.Router'>":
-                    obj.converge_tables(router_b)
+                    obj.converge_tables(obj2)
     sleep(simulation_time)       
     for obj in object_L:
         if str(type(obj)) == "<class 'network_1.Router'>":
-            router_a.print_routes()
+            obj.print_routes()
 
     #send packet from host 1 to host 2'
     host_1.udt_send('H2', 'MESSAGE_FROM_H1')
