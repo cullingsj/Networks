@@ -219,14 +219,16 @@ class Router:
             lowest = 100
             interface = 1
             dest = p.dst[5-p.dst_S_length:]
+            entrySaved = ''
             #print("Printing dest %s" % p.dst[5-p.dst_S_length:])
             for entry in self.cost_D:
                 if(not self.cost_D[entry] == i and not str(entry)[:1] == 'H'):
                     if (self.rt_tbl_D[dest][entry] < lowest):
                         lowest = self.rt_tbl_D[dest][entry]
                         for face in self.cost_D[entry]:
+                            entrySaved = entry
                             interface = int(face)
-            print("Taking path %d from %s to %s" % (interface, self.name, self.cost_D[dest][interface]))
+            print("Taking interface %d from %s to %s" % (interface, self.name, entrySaved))
             self.intf_L[interface].put(p.to_byte_S(), 'out', True)
 
             #print('%s: forwarding packet "%s" from interface %d to %d' % \
