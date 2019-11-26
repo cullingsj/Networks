@@ -183,7 +183,7 @@ class Router:
         '''for neighbor in self.cost_D:
             interface = self.cost_D[neighbor].keys()[0]
             self.cost_D[neighbor][interface] = self.rt_tbl_D[neighbor][self.name]
-        '''
+        '''    
     ## called when printing the object
     def __str__(self):
         return self.name
@@ -216,7 +216,10 @@ class Router:
             # TODO: Here you will need to implement a lookup into the 
             # forwarding table to find the appropriate outgoing interface
             # for now we assume the outgoing interface is 1
-
+            lowest = 0
+            '''for j in range (len(self.intf_L)):
+                if(not j == i and self.cost_D[]):
+                    self.cost_D'''
             self.intf_L[1].put(p.to_byte_S(), 'out', True)
             print('%s: forwarding packet "%s" from interface %d to %d' % \
                 (self, p, i, 1))
