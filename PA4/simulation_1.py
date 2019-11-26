@@ -59,6 +59,7 @@ if __name__ == '__main__':
             for obj2 in object_L:
                 if not(obj == obj2) and str(type(obj2)) == "<class 'network_1.Router'>":
                     obj.converge_tables(obj2)
+
     sleep(simulation_time)       
     for obj in object_L:
         if str(type(obj)) == "<class 'network_1.Router'>":

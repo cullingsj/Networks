@@ -55,15 +55,16 @@ if __name__ == '__main__':
 
     print("Converged routing tables")
     for obj in object_L:
-        if str(type(obj)) == "<class 'network_1.Router'>":
+        if str(type(obj)) == "<class 'network_2.Router'>":
             for obj2 in object_L:
-                if not(obj == obj2) and str(type(obj2)) == "<class 'network_1.Router'>":
+                if not(obj == obj2) and str(type(obj2)) == "<class 'network_2.Router'>":
                     obj.converge_tables(obj2)
     sleep(simulation_time)       
     for obj in object_L:
-        if str(type(obj)) == "<class 'network_1.Router'>":
+        if str(type(obj)) == "<class 'network_2.Router'>":
             obj.print_routes()
 
+    sleep(simulation_time)
     #send packet from host 1 to host 2'
     host_1.udt_send('H2', 'MESSAGE_FROM_H1')
     sleep(simulation_time)

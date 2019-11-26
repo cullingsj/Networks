@@ -155,6 +155,7 @@ class Router:
     ## Print routing table
     def print_routes(self):
         #TODO: print the routes as a two dimensional table
+        print("Entered into ")
         if(len(self.rt_tbl_D)>0):
             print(self.rt_tbl_D)
             print((len(self.rt_tbl_D)*3+4)*'=')
@@ -179,11 +180,6 @@ class Router:
                 temp = {router_in.name: int(router_in.rt_tbl_D[destination][router_in.name])}
                 self.rt_tbl_D[destination].update(temp)
 
-            #print(self.rt_tbl_D)
-        '''for neighbor in self.cost_D:
-            interface = self.cost_D[neighbor].keys()[0]
-            self.cost_D[neighbor][interface] = self.rt_tbl_D[neighbor][self.name]
-        '''    
     ## called when printing the object
     def __str__(self):
         return self.name
